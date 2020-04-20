@@ -5,10 +5,15 @@ import sys
 class CPU:
     """Main CPU class."""
 
+    # Static instructions
+    HLT = 0b00000001
+    PRN = 0b01000111
+    LDI = 0b10000010
+
     def __init__(self):
         """Construct a new CPU."""
         self.ram = [0] * 256
-        self.reg = [0] * 256
+        self.reg = [0] * 8
         self.pc = 0
 
     def load(self):
@@ -75,12 +80,12 @@ class CPU:
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
 
-            if ir == 0b00000001:
+            if ir == self.HLT:
                 break
-            elif ir == 0b10000010:
+            elif ir == self.LDI:
                 self.reg[operand_a] = operand_b
                 self.pc += 3
-            elif ir == 0b01000111:
+            elif ir == self.PRN:
                 print(self.reg[operand_a])
                 self.pc += 2
             else:
