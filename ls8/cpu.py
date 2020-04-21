@@ -9,6 +9,7 @@ class CPU:
     HLT = 0b00000001
     PRN = 0b01000111
     LDI = 0b10000010
+    MUL = 0b10100010
 
     def __init__(self):
         """Construct a new CPU."""
@@ -82,5 +83,8 @@ class CPU:
             elif ir == self.PRN:
                 print(self.reg[operand_a])
                 self.pc += 2
+            elif ir == self.MUL:
+                self.reg[operand_a] *= self.reg[operand_b]
+                self.pc += 3
             else:
                 self.pc += 1
