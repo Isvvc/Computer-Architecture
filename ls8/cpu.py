@@ -16,6 +16,11 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
+        self.instructions = {
+            self.PRN: self.print_instruction,
+            self.LDI: self.load_instruction,
+            self.MUL: self.multiply
+        }
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -66,7 +71,19 @@ class CPU:
         return self.ram[mar]
 
     def ram_write(self, mar, mdr):
-        self.ram[mar] = data
+        self.ram[mar] = mdr
+
+    def print_instruction(self, a, b):
+        print(self.reg[a])
+        self.pc += 2
+
+    def load_instruction(self, a, b):
+        self.reg[a] = b
+        self.pc += 3
+
+    def multiply(self, a, b):
+        self.reg[a] *= self.reg[b]
+        self.pc += 3
 
     def run(self):
         """Run the CPU."""
@@ -77,14 +94,5 @@ class CPU:
 
             if ir == self.HLT:
                 break
-            elif ir == self.LDI:
-                self.reg[operand_a] = operand_b
-                self.pc += 3
-            elif ir == self.PRN:
-                print(self.reg[operand_a])
-                self.pc += 2
-            elif ir == self.MUL:
-                self.reg[operand_a] *= self.reg[operand_b]
-                self.pc += 3
             else:
-                self.pc += 1
+                self.instructions[ir](operand_a, operand_b)
