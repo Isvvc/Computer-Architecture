@@ -10,16 +10,24 @@ class CPU:
     PRN = 0b01000111
     LDI = 0b10000010
     MUL = 0b10100010
+    PUSH = 0b01000101
+    POP = 0b01000110
+
+    # Static registers
+    SP = 7
 
     def __init__(self):
         """Construct a new CPU."""
         self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
+        self.reg[self.SP] = 0xf4
         self.instructions = {
             self.PRN: self.print_instruction,
             self.LDI: self.load_instruction,
-            self.MUL: self.multiply
+            self.MUL: self.multiply,
+            self.PUSH: self.push,
+            self.POP: self.pop
         }
 
     def load(self, program_file):
@@ -84,6 +92,16 @@ class CPU:
     def multiply(self, a, b):
         self.reg[a] *= self.reg[b]
         self.pc += 3
+
+    def push(self, a, b):
+        self.reg[self.SP] -= 1
+        self.ram[self.reg[self.SP]] = self.reg[a]
+        self.pc += 2
+
+    def pop(self, a, b):
+        self.reg[a] = self.ram[self.reg[self.SP]]
+        self.reg[self.SP] += 1
+        self.pc += 2
 
     def run(self):
         """Run the CPU."""
