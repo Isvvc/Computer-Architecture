@@ -12,6 +12,9 @@ class CPU:
     MUL = 0b10100010
     PUSH = 0b01000101
     POP = 0b01000110
+    CALL = 0b01010000
+    RET = 0b00010001
+    ADD = 0b10100000
 
     # Static registers
     SP = 7
@@ -27,7 +30,10 @@ class CPU:
             self.LDI: self.load_instruction,
             self.MUL: self.multiply,
             self.PUSH: self.push,
-            self.POP: self.pop
+            self.POP: self.pop,
+            self.CALL: self.call,
+            self.RET: self.ret,
+            self.ADD: self.add
         }
 
     def load(self, program_file):
@@ -103,9 +109,23 @@ class CPU:
         self.reg[self.SP] += 1
         self.pc += 2
 
+    def call(self, a, b):
+        self.reg[self.SP] -= 1
+        self.ram[self.reg[self.SP]] = self.pc + 2
+        self.pc = self.reg[a]
+
+    def ret(self, a, b):
+        self.pc = self.ram[self.reg[self.SP]]
+        self.reg[self.SP] += 1
+
+    def add(self, a, b):
+        self.reg[a] += self.reg[b]
+        self.pc += 3
+
     def run(self):
         """Run the CPU."""
         while True:
+            #print(self.pc)
             ir = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
