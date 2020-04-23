@@ -1,0 +1,7 @@
+cpu.py
+The emulated CPU
+Implemented:
+* load a hard-coded program
+* add function in ALU
+* trace function
+
