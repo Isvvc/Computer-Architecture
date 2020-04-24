@@ -15,6 +15,9 @@ class CPU:
     CALL = 0b01010000
     RET = 0b00010001
     ADD = 0b10100000
+    CMP = 0b10100111
+    JMP = 0b01010100
+    JEQ = 0b01010101
 
     # Static registers
     SP = 7
@@ -25,6 +28,7 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
         self.reg[self.SP] = 0xf4
+        self.fl = 0
         self.instructions = {
             self.PRN: self.print_instruction,
             self.LDI: self.load_instruction,
@@ -33,7 +37,10 @@ class CPU:
             self.POP: self.pop,
             self.CALL: self.call,
             self.RET: self.ret,
-            self.ADD: self.add
+            self.ADD: self.add,
+            self.CMP: self.compare,
+            self.JMP: self.jump,
+            self.JEQ: self.jump_equal
         }
 
     def load(self, program_file):
@@ -122,10 +129,29 @@ class CPU:
         self.reg[a] += self.reg[b]
         self.pc += 3
 
+    def compare(self, a, b):
+        val_a = self.reg[a]
+        val_b = self.reg[b]
+        if val_a < val_b:
+            self.fl = 0b00000100
+        elif val_a > val_b:
+            self.fl = 0b00000010
+        elif val_a == val_b:
+            self.fl = 0b00000001
+        self.pc += 3
+
+    def jump(self, a, b):
+        self.pc = self.reg[a]
+
+    def jump_equal(self, a, b):
+        if self.fl == 1:
+            self.pc = self.reg[a]
+        else:
+            self.pc += 2
+
     def run(self):
         """Run the CPU."""
         while True:
-            #print(self.pc)
             ir = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
