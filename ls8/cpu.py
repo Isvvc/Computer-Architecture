@@ -19,6 +19,7 @@ class CPU:
     JMP = 0b01010100
     JEQ = 0b01010101
     JNE = 0b01010110
+    ADDI = 0b10000000
 
     # Static registers
     SP = 7
@@ -42,7 +43,8 @@ class CPU:
             self.CMP: self.compare,
             self.JMP: self.jump,
             self.JEQ: self.jump_equal,
-            self.JNE: self.jump_not_equal
+            self.JNE: self.jump_not_equal,
+            self.ADDI: self.add_immediate
         }
 
     def load(self, program_file):
@@ -155,6 +157,10 @@ class CPU:
             self.pc = self.reg[a]
         else:
             self.pc += 2
+
+    def add_immediate(self, a, b):
+        self.reg[a] += b
+        self.pc += 3
 
     def run(self):
         """Run the CPU."""
