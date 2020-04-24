@@ -18,6 +18,7 @@ class CPU:
     CMP = 0b10100111
     JMP = 0b01010100
     JEQ = 0b01010101
+    JNE = 0b01010110
 
     # Static registers
     SP = 7
@@ -40,7 +41,8 @@ class CPU:
             self.ADD: self.add,
             self.CMP: self.compare,
             self.JMP: self.jump,
-            self.JEQ: self.jump_equal
+            self.JEQ: self.jump_equal,
+            self.JNE: self.jump_not_equal
         }
 
     def load(self, program_file):
@@ -145,6 +147,11 @@ class CPU:
 
     def jump_equal(self, a, b):
         if self.fl == 1:
+            self.pc = self.reg[a]
+        else:
+            self.pc += 2
+    def jump_not_equal(self, a, b):
+        if self.fl != 1:
             self.pc = self.reg[a]
         else:
             self.pc += 2
